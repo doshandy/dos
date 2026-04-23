@@ -5,8 +5,10 @@
 - 📫 **联系方式**：sun8630520@126.com
 - 🌐 **在线简历**：<https://doshandy.github.io/dos/>
 - 🧪 **交互 Demo**
-  - 数据血缘可视化：<https://doshandy.github.io/dos/demos/lineage.html>
-  - AI Copilot 对话：<https://doshandy.github.io/dos/demos/copilot.html>
+  - 🕸 数据血缘可视化（AntV G6）：<https://doshandy.github.io/dos/demos/lineage.html>
+  - 🤖 AI Copilot 对话：<https://doshandy.github.io/dos/demos/copilot.html>
+  - 📊 数据看板（AntV G2）：<https://doshandy.github.io/dos/demos/charts.html>
+  - ⚡ SQL 编辑器（Monaco）：<https://doshandy.github.io/dos/demos/sql-editor.html>
 
 ---
 
@@ -72,17 +74,29 @@
 
 > 以下 Demo 是对 DataPilot 核心产品形态的极简复刻，纯前端静态页，可直接在浏览器中体验。
 
-### Demo 1：数据血缘可视化
+### Demo 1：数据血缘可视化 · AntV G6
 
-基于 AntV G6 渲染跨库跨表的血缘关系，支持拖拽、节点点击、影响链高亮。
+跨库跨表血缘图谱，支持拖拽、节点点击、上下游影响链自动高亮。
 
 👉 [在线体验](https://doshandy.github.io/dos/demos/lineage.html)
 
 ### Demo 2：AI Copilot 对话
 
-模拟自然语言查询数据的对话流，包含预设问答、流式输出动画、会话管理等关键交互。
+模拟自然语言查询数据的对话流，包含预设问答、流式输出动画、SQL 诊断与血缘追溯。
 
 👉 [在线体验](https://doshandy.github.io/dos/demos/copilot.html)
+
+### Demo 3：数据看板 · AntV G2
+
+KPI 卡片 + 多图表组合（折线 / 环形 / 柱状 / 热力），与暗色 UI 风格统一。
+
+👉 [在线体验](https://doshandy.github.io/dos/demos/charts.html)
+
+### Demo 4：SQL 编辑器 · Monaco Editor
+
+完整的 SQL IDE 体验：语法高亮、自动补全、`Cmd/Ctrl+Enter` 执行、`Shift+Alt+F` 格式化、执行计划、运行日志、结果预览。
+
+👉 [在线体验](https://doshandy.github.io/dos/demos/sql-editor.html)
 
 ---
 

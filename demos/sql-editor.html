@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SQL 编辑器 Demo · DataPilot</title>
+    <link rel="stylesheet" href="../assets/style.css" />
+    <style>
+      body {
+        overflow: hidden;
+      }
+      .app {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+      }
+      .topbar {
+        padding: 14px 24px;
+        border-bottom: 1px solid var(--border);
+        background: var(--bg-card);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .topbar h1 {
+        font-size: 16px;
+        font-weight: 600;
+      }
+      .topbar .sub {
+        color: var(--text-muted);
+        font-size: 13px;
+        margin-left: 10px;
+      }
+      .topbar a {
+        font-size: 13px;
+      }
+      .toolbar {
+        padding: 8px 16px;
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .toolbar select,
+      .toolbar button {
+        background: #0e1118;
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 6px 12px;
+        font-size: 13px;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .toolbar select:hover,
+      .toolbar button:hover {
+        border-color: var(--accent);
+      }
+      .toolbar .primary {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+      .toolbar .primary:hover {
+        opacity: 0.9;
+      }
+      .toolbar .primary:disabled {
+        background: #343a4a;
+        border-color: #343a4a;
+        cursor: not-allowed;
+      }
+      .toolbar .spacer {
+        flex: 1;
+      }
+      .toolbar .engine-label {
+        color: var(--text-muted);
+        font-size: 12px;
+      }
+      .body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+      #editor {
+        flex: 1;
+        min-height: 240px;
+      }
+      .result-area {
+        height: 42%;
+        border-top: 1px solid var(--border);
+        background: var(--bg-card);
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+      .tabs {
+        display: flex;
+        border-bottom: 1px solid var(--border);
+        background: #0b0d12;
+        padding: 0 16px;
+        align-items: center;
+        min-height: 38px;
+      }
+      .tab {
+        padding: 10px 14px;
+        font-size: 13px;
+        color: var(--text-muted);
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        margin-right: 6px;
+      }
+      .tab.active {
+        color: var(--text);
+        border-bottom-color: var(--accent);
+      }
+      .status {
+        margin-left: auto;
+        color: var(--text-muted);
+        font-size: 12px;
+        font-family: var(--mono);
+      }
+      .status .ok {
+        color: var(--success);
+      }
+      .status .err {
+        color: #e06c75;
+      }
+
+      .result-body {
+        flex: 1;
+        overflow: auto;
+        padding: 12px 16px;
+      }
+      .result-body::-webkit-scrollbar {
+        width: 8px; height: 8px;
+      }
+      .result-body::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 4px;
+      }
+      .result-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        font-family: var(--mono);
+      }
+      .result-table th,
+      .result-table td {
+        padding: 6px 12px;
+        border-bottom: 1px solid var(--border);
+        text-align: left;
+        white-space: nowrap;
+      }
+      .result-table th {
+        position: sticky;
+        top: 0;
+        background: #0b0d12;
+        color: var(--text-muted);
+        font-weight: 500;
+        z-index: 1;
+      }
+      .result-table tr:hover td {
+        background: rgba(79, 140, 255, 0.05);
+      }
+
+      .plan-box,
+      .log-box {
+        font-family: var(--mono);
+        font-size: 12px;
+        line-height: 1.7;
+        color: var(--text);
+        white-space: pre-wrap;
+      }
+      .log-box .t {
+        color: var(--text-muted);
+      }
+      .log-box .ok {
+        color: var(--success);
+      }
+      .plan-box .node {
+        color: var(--accent);
+      }
+      .plan-box .meta {
+        color: var(--text-muted);
+      }
+      .empty {
+        color: var(--text-muted);
+        font-size: 13px;
+        text-align: center;
+        padding: 30px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div class="topbar">
+        <div>
+          <h1 style="display: inline">⚡ SQL 编辑器</h1>
+          <span class="sub">Monaco Editor · SQL 格式化 · 执行计划 · 结果预览</span>
+        </div>
+        <a href="../index.html">← 返回简历</a>
+      </div>
+
+      <div class="toolbar">
+        <button class="primary" id="run-btn">▶ 执行</button>
+        <button id="format-btn">格式化</button>
+        <span class="engine-label">引擎：</span>
+        <select id="engine">
+          <option>Spark SQL</option>
+          <option>Hive</option>
+          <option>Presto</option>
+        </select>
+        <span class="engine-label">示例：</span>
+        <select id="sample">
+          <option value="dau">DAU 查询</option>
+          <option value="gmv">GMV 按业务线聚合</option>
+          <option value="funnel">漏斗分析</option>
+        </select>
+        <span class="spacer"></span>
+        <span class="engine-label" id="cursor-info">Ln 1, Col 1</span>
+      </div>
+
+      <div class="body">
+        <div id="editor"></div>
+
+        <div class="result-area">
+          <div class="tabs">
+            <div class="tab active" data-tab="result">查询结果</div>
+            <div class="tab" data-tab="plan">执行计划</div>
+            <div class="tab" data-tab="log">运行日志</div>
+            <div class="status" id="status">就绪</div>
+          </div>
+          <div class="result-body" id="pane-result">
+            <div class="empty">点击 ▶ 执行查看结果</div>
+          </div>
+          <div class="result-body" id="pane-plan" style="display: none">
+            <div class="empty">执行后将显示执行计划</div>
+          </div>
+          <div class="result-body" id="pane-log" style="display: none">
+            <div class="empty">执行后将显示运行日志</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/monaco-editor@0.45.0/min/vs/loader.js"></script>
+    <script src="https://unpkg.com/sql-formatter@15.3.2/dist/sql-formatter.min.js"></script>
+    <script>
+      const SAMPLES = {
+        dau:
+`-- 查询最近 7 天 DAU
+select dt, count(distinct user_id) as dau
+from dwd_user_event
+where dt between date_sub(current_date, 7) and current_date
+group by dt
+order by dt desc;`,
+        gmv:
+`-- 按业务线聚合 GMV
+select business_line, sum(order_amount) as gmv, count(*) as order_cnt
+from dwd_order_detail o
+join dim_business_line b on o.line_id = b.id
+where dt = '2026-04-22' and status = 'PAID'
+group by business_line
+order by gmv desc
+limit 20;`,
+        funnel:
+`-- 用户转化漏斗
+with base as (
+  select user_id,
+         max(case when event = 'view' then 1 else 0 end) as v,
+         max(case when event = 'click' then 1 else 0 end) as c,
+         max(case when event = 'order' then 1 else 0 end) as o,
+         max(case when event = 'pay' then 1 else 0 end) as p
+  from dwd_user_event
+  where dt = '2026-04-22'
+  group by user_id
+)
+select sum(v) as view_uv, sum(c) as click_uv, sum(o) as order_uv, sum(p) as pay_uv
+from base;`,
+      };
+
+      const RESULTS = {
+        dau: {
+          columns: ['dt', 'dau'],
+          rows: [
+            ['2026-04-22', 1284910],
+            ['2026-04-21', 1326810],
+            ['2026-04-20', 1305422],
+            ['2026-04-19', 1287653],
+            ['2026-04-18', 1254301],
+            ['2026-04-17', 1298774],
+            ['2026-04-16', 1271208],
+          ],
+          scanned: '128M 行',
+          time: '4.2s',
+        },
+        gmv: {
+          columns: ['business_line', 'gmv', 'order_cnt'],
+          rows: [
+            ['消费分期', 184328000, 128400],
+            ['信用卡代偿', 96210000, 96210],
+            ['小额现金贷', 88340000, 88340],
+            ['车抵业务', 54320000, 54320],
+            ['保险分销', 41800000, 41800],
+            ['理财服务', 32980000, 32980],
+          ],
+          scanned: '42M 行',
+          time: '2.8s',
+        },
+        funnel: {
+          columns: ['view_uv', 'click_uv', 'order_uv', 'pay_uv'],
+          rows: [[1284910, 386472, 128900, 124083]],
+          scanned: '128M 行',
+          time: '6.1s',
+        },
+      };
+
+      require.config({ paths: { vs: 'https://unpkg.com/monaco-editor@0.45.0/min/vs' } });
+      require(['vs/editor/editor.main'], function () {
+        monaco.editor.defineTheme('datapilot-dark', {
+          base: 'vs-dark',
+          inherit: true,
+          rules: [
+            { token: '', foreground: 'e6e9f0', background: '0b0d12' },
+            { token: 'keyword.sql', foreground: '4f8cff', fontStyle: 'bold' },
+            { token: 'predefined.sql', foreground: '3ecf8e' },
+            { token: 'string.sql', foreground: 'f5b86e' },
+            { token: 'number.sql', foreground: 'b392f0' },
+            { token: 'comment.sql', foreground: '5a6378', fontStyle: 'italic' },
+            { token: 'operator.sql', foreground: 'e6e9f0' },
+          ],
+          colors: {
+            'editor.background': '#0b0d12',
+            'editor.foreground': '#e6e9f0',
+            'editor.lineHighlightBackground': '#12151c',
+            'editorLineNumber.foreground': '#3a4158',
+            'editorLineNumber.activeForeground': '#8a92a6',
+            'editor.selectionBackground': '#1f3050',
+            'editorCursor.foreground': '#4f8cff',
+            'editorIndentGuide.background1': '#1a1e29',
+            'scrollbarSlider.background': '#24293740',
+            'scrollbarSlider.hoverBackground': '#2d3344',
+          },
+        });
+
+        const editor = monaco.editor.create(document.getElementById('editor'), {
+          value: SAMPLES.dau,
+          language: 'sql',
+          theme: 'datapilot-dark',
+          fontFamily: 'SF Mono, JetBrains Mono, Menlo, monospace',
+          fontSize: 13,
+          minimap: { enabled: false },
+          scrollBeyondLastLine: false,
+          lineNumbersMinChars: 3,
+          padding: { top: 12 },
+          tabSize: 2,
+          renderWhitespace: 'none',
+          automaticLayout: true,
+        });
+
+        // ===== 补全提示 =====
+        monaco.languages.registerCompletionItemProvider('sql', {
+          triggerCharacters: ['.', ' '],
+          provideCompletionItems() {
+            const tables = [
+              'dwd_user_event', 'dwd_order_detail', 'dwd_payment_flow',
+              'dws_user_day', 'dws_order_day', 'ads_dashboard_dau',
+              'ads_finance_report', 'dim_business_line', 'dim_user',
+            ];
+            const fns = ['count', 'sum', 'avg', 'max', 'min', 'date_sub', 'current_date'];
+            return {
+              suggestions: [
+                ...tables.map((t) => ({
+                  label: t,
+                  kind: monaco.languages.CompletionItemKind.Class,
+                  insertText: t,
+                  detail: '数据表',
+                })),
+                ...fns.map((f) => ({
+                  label: f,
+                  kind: monaco.languages.CompletionItemKind.Function,
+                  insertText: `${f}($0)`,
+                  insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                  detail: '内置函数',
+                })),
+              ],
+            };
+          },
+        });
+
+        // ===== 光标位置 =====
+        const cursorInfo = document.getElementById('cursor-info');
+        editor.onDidChangeCursorPosition((e) => {
+          cursorInfo.textContent = `Ln ${e.position.lineNumber}, Col ${e.position.column}`;
+        });
+
+        // ===== 快捷键：Ctrl/Cmd + Enter 执行，Shift+Alt+F 格式化 =====
+        editor.addCommand(
+          monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter,
+          () => runQuery(),
+        );
+        editor.addAction({
+          id: 'sql-format',
+          label: 'Format SQL',
+          keybindings: [monaco.KeyMod.Shift | monaco.KeyMod.Alt | monaco.KeyCode.KeyF],
+          run: () => formatQuery(),
+        });
+
+        // ===== 格式化 =====
+        function formatQuery() {
+          const engine = document.getElementById('engine').value;
+          const dialect = engine === 'Hive' ? 'hive' : engine === 'Presto' ? 'trino' : 'spark';
+          const src = editor.getValue();
+          try {
+            const out = sqlFormatter.format(src, { language: dialect, keywordCase: 'lower', tabWidth: 2 });
+            editor.setValue(out);
+            setStatus('✓ 已格式化', 'ok');
+          } catch (e) {
+            setStatus('✗ 格式化失败：' + e.message, 'err');
+          }
+        }
+        document.getElementById('format-btn').onclick = formatQuery;
+
+        // ===== 执行 =====
+        function guessResultKey() {
+          const v = editor.getValue().toLowerCase();
+          if (v.includes('funnel') || (v.includes('with base') && v.includes('pay'))) return 'funnel';
+          if (v.includes('business_line') || v.includes('gmv')) return 'gmv';
+          return 'dau';
+        }
+
+        function runQuery() {
+          const key = guessResultKey();
+          const engine = document.getElementById('engine').value;
+          const result = RESULTS[key];
+          const runBtn = document.getElementById('run-btn');
+          runBtn.disabled = true;
+          runBtn.textContent = '运行中…';
+          setStatus(`[${engine}] 查询排队中...`);
+
+          switchTab('log');
+          const log = document.getElementById('pane-log');
+          log.innerHTML = `<div class="log-box"></div>`;
+          const logEl = log.querySelector('.log-box');
+          const now = () => new Date().toLocaleTimeString('zh-CN', { hour12: false });
+          const addLog = (line, cls = '') => {
+            logEl.innerHTML += `<span class="t">[${now()}]</span> ${cls ? `<span class="${cls}">${line}</span>` : line}\n`;
+            log.scrollTop = log.scrollHeight;
+          };
+
+          addLog(`提交 SQL 至 ${engine} 引擎`);
+
+          setTimeout(() => {
+            addLog('解析 SQL …');
+            setTimeout(() => {
+              addLog('生成执行计划 …');
+              setTimeout(() => {
+                addLog(`扫描数据：${result.scanned}`);
+                setTimeout(() => {
+                  addLog(`计算完成，耗时 ${result.time}`, 'ok');
+                  renderResult(result);
+                  renderPlan(key, engine);
+                  switchTab('result');
+                  setStatus(`✓ 完成 · 返回 ${result.rows.length} 行 · ${result.time}`, 'ok');
+                  runBtn.disabled = false;
+                  runBtn.textContent = '▶ 执行';
+                }, 400);
+              }, 300);
+            }, 250);
+          }, 200);
+        }
+        document.getElementById('run-btn').onclick = runQuery;
+
+        function renderResult(r) {
+          const pane = document.getElementById('pane-result');
+          const head = '<tr>' + r.columns.map((c) => `<th>${c}</th>`).join('') + '</tr>';
+          const body = r.rows
+            .map((row) => '<tr>' + row.map((c) => `<td>${typeof c === 'number' ? c.toLocaleString() : c}</td>`).join('') + '</tr>')
+            .join('');
+          pane.innerHTML = `<table class="result-table"><thead>${head}</thead><tbody>${body}</tbody></table>`;
+        }
+
+        function renderPlan(key, engine) {
+          const pane = document.getElementById('pane-plan');
+          const plans = {
+            dau:
+`== Physical Plan ==
+<span class="node">Sort</span> <span class="meta">[dt#0 DESC]</span>
+ +- <span class="node">HashAggregate</span> <span class="meta">[dt#0]</span>, functions=[count(distinct user_id#1)]
+    +- <span class="node">Exchange</span> <span class="meta">hashpartitioning(dt#0, 200)</span>
+       +- <span class="node">Filter</span> <span class="meta">(dt >= date_sub(current_date, 7))</span>
+          +- <span class="node">FileScan</span> <span class="meta">parquet dwd_user_event[dt, user_id]</span>
+             <span class="meta">PartitionFilters: [dt >= ...], PushedFilters: []</span>`,
+            gmv:
+`== Physical Plan ==
+<span class="node">Sort</span> <span class="meta">[gmv DESC]</span>, Limit 20
+ +- <span class="node">HashAggregate</span> <span class="meta">[business_line]</span>, functions=[sum(order_amount), count(1)]
+    +- <span class="node">BroadcastHashJoin</span> <span class="meta">[line_id = id], Inner, BuildRight</span>
+       +- <span class="node">FileScan</span> <span class="meta">parquet dwd_order_detail (PartitionFilters: [dt='2026-04-22'])</span>
+       +- <span class="node">BroadcastExchange</span>
+          +- <span class="node">FileScan</span> <span class="meta">parquet dim_business_line</span>`,
+            funnel:
+`== Physical Plan ==
+<span class="node">HashAggregate</span> <span class="meta">[sum(v), sum(c), sum(o), sum(p)]</span>
+ +- <span class="node">HashAggregate</span> <span class="meta">[user_id]</span>, functions=[max(...) x4]
+    +- <span class="node">Project</span>
+       +- <span class="node">FileScan</span> <span class="meta">parquet dwd_user_event (PartitionFilters: [dt='2026-04-22'])</span>`,
+          };
+          pane.innerHTML = `<div class="plan-box">引擎：${engine}\n\n${plans[key]}</div>`;
+        }
+
+        function setStatus(text, cls = '') {
+          const s = document.getElementById('status');
+          s.innerHTML = cls ? `<span class="${cls}">${text}</span>` : text;
+        }
+
+        function switchTab(name) {
+          document.querySelectorAll('.tab').forEach((t) => t.classList.toggle('active', t.dataset.tab === name));
+          ['result', 'plan', 'log'].forEach((k) => {
+            document.getElementById('pane-' + k).style.display = k === name ? '' : 'none';
+          });
+        }
+        document.querySelectorAll('.tab').forEach((t) => {
+          t.onclick = () => switchTab(t.dataset.tab);
+        });
+
+        document.getElementById('sample').onchange = (e) => {
+          editor.setValue(SAMPLES[e.target.value]);
+          setStatus('已加载示例');
+        };
+      });
+    </script>
+  </body>
+</html>
