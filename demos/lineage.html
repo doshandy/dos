@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>数据血缘可视化 Demo · DataPilot</title>
+    <link rel="stylesheet" href="../assets/style.css" />
+    <style>
+      body {
+        overflow: hidden;
+      }
+      .demo-layout {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+      }
+      .topbar {
+        padding: 14px 24px;
+        border-bottom: 1px solid var(--border);
+        background: var(--bg-card);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .topbar h1 {
+        font-size: 16px;
+        font-weight: 600;
+      }
+      .topbar .sub {
+        color: var(--text-muted);
+        font-size: 13px;
+        margin-left: 10px;
+      }
+      .topbar a {
+        font-size: 13px;
+      }
+      .main {
+        flex: 1;
+        display: flex;
+        min-height: 0;
+      }
+      #graph {
+        flex: 1;
+        background:
+          radial-gradient(circle at 20% 20%, rgba(79, 140, 255, 0.08), transparent 40%),
+          radial-gradient(circle at 80% 80%, rgba(62, 207, 142, 0.06), transparent 40%),
+          var(--bg);
+      }
+      .sidepanel {
+        width: 300px;
+        border-left: 1px solid var(--border);
+        background: var(--bg-card);
+        padding: 20px;
+        overflow-y: auto;
+      }
+      .sidepanel h2 {
+        font-size: 14px;
+        color: var(--text-muted);
+        margin-bottom: 10px;
+        font-weight: 500;
+      }
+      .sidepanel .node-name {
+        font-family: var(--mono);
+        font-size: 15px;
+        color: var(--accent);
+        margin-bottom: 12px;
+        word-break: break-all;
+      }
+      .sidepanel .row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 13px;
+      }
+      .sidepanel .row .k {
+        color: var(--text-muted);
+      }
+      .sidepanel .empty {
+        color: var(--text-muted);
+        font-size: 13px;
+        padding: 20px 0;
+        text-align: center;
+      }
+      .legend {
+        display: flex;
+        gap: 14px;
+        font-size: 12px;
+        color: var(--text-muted);
+        flex-wrap: wrap;
+      }
+      .legend .item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .legend .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+      }
+      .toolbar {
+        position: absolute;
+        top: 78px;
+        left: 28px;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 6px;
+        display: flex;
+        gap: 4px;
+      }
+      .toolbar button {
+        background: transparent;
+        color: var(--text);
+        border: none;
+        padding: 6px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+      }
+      .toolbar button:hover {
+        background: var(--bg-card-hover);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="demo-layout">
+      <div class="topbar">
+        <div>
+          <h1 style="display: inline">🕸 数据血缘可视化</h1>
+          <span class="sub">DataPilot · DataMap 模块产品形态复刻</span>
+        </div>
+        <div class="legend">
+          <div class="item"><span class="dot" style="background: #4f8cff"></span>ODS 原始层</div>
+          <div class="item"><span class="dot" style="background: #3ecf8e"></span>DWD 明细层</div>
+          <div class="item"><span class="dot" style="background: #f5b86e"></span>DWS 汇总层</div>
+          <div class="item"><span class="dot" style="background: #e06c75"></span>ADS 应用层</div>
+          <a href="../index.html">← 返回简历</a>
+        </div>
+      </div>
+      <div class="main">
+        <div id="graph"></div>
+        <div class="sidepanel">
+          <h2>节点详情</h2>
+          <div id="detail">
+            <div class="empty">点击任意表节点查看详情；点击节点可高亮它的上下游血缘。</div>
+          </div>
+        </div>
+      </div>
+      <div class="toolbar">
+        <button id="fit">适应画布</button>
+        <button id="zoom-in">放大</button>
+        <button id="zoom-out">缩小</button>
+        <button id="reset">重置高亮</button>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/@antv/g6@4.8.24/dist/g6.min.js"></script>
+    <script>
+      const LAYER_COLOR = {
+        ODS: '#4f8cff',
+        DWD: '#3ecf8e',
+        DWS: '#f5b86e',
+        ADS: '#e06c75',
+      };
+
+      const nodes = [
+        // ODS
+        { id: 'ods_user_log', label: 'ods_user_log', layer: 'ODS', rows: '128M', owner: 'ingest' },
+        { id: 'ods_order_raw', label: 'ods_order_raw', layer: 'ODS', rows: '42M', owner: 'ingest' },
+        { id: 'ods_payment_raw', label: 'ods_payment_raw', layer: 'ODS', rows: '38M', owner: 'ingest' },
+
+        // DWD
+        { id: 'dwd_user_event', label: 'dwd_user_event', layer: 'DWD', rows: '128M', owner: 'dw-team' },
+        { id: 'dwd_order_detail', label: 'dwd_order_detail', layer: 'DWD', rows: '42M', owner: 'dw-team' },
+        { id: 'dwd_payment_flow', label: 'dwd_payment_flow', layer: 'DWD', rows: '38M', owner: 'dw-team' },
+
+        // DWS
+        { id: 'dws_user_day', label: 'dws_user_day', layer: 'DWS', rows: '4.1M', owner: 'dw-team' },
+        { id: 'dws_order_day', label: 'dws_order_day', layer: 'DWS', rows: '2.3M', owner: 'dw-team' },
+
+        // ADS
+        { id: 'ads_dashboard_dau', label: 'ads_dashboard_dau', layer: 'ADS', rows: '370', owner: 'bi-team' },
+        { id: 'ads_risk_score', label: 'ads_risk_score', layer: 'ADS', rows: '180k', owner: 'risk-team' },
+        { id: 'ads_finance_report', label: 'ads_finance_report', layer: 'ADS', rows: '120', owner: 'bi-team' },
+      ];
+
+      const edges = [
+        { source: 'ods_user_log', target: 'dwd_user_event' },
+        { source: 'ods_order_raw', target: 'dwd_order_detail' },
+        { source: 'ods_payment_raw', target: 'dwd_payment_flow' },
+
+        { source: 'dwd_user_event', target: 'dws_user_day' },
+        { source: 'dwd_order_detail', target: 'dws_order_day' },
+        { source: 'dwd_payment_flow', target: 'dws_order_day' },
+
+        { source: 'dws_user_day', target: 'ads_dashboard_dau' },
+        { source: 'dws_order_day', target: 'ads_dashboard_dau' },
+        { source: 'dws_order_day', target: 'ads_finance_report' },
+        { source: 'dwd_payment_flow', target: 'ads_risk_score' },
+      ];
+
+      const styledNodes = nodes.map((n) => ({
+        ...n,
+        type: 'rect',
+        size: [160, 40],
+        style: {
+          fill: '#12151c',
+          stroke: LAYER_COLOR[n.layer],
+          lineWidth: 1.5,
+          radius: 6,
+        },
+        labelCfg: {
+          style: {
+            fill: '#e6e9f0',
+            fontSize: 13,
+            fontFamily: 'SF Mono, Menlo, monospace',
+          },
+        },
+      }));
+
+      const styledEdges = edges.map((e) => ({
+        ...e,
+        type: 'cubic-horizontal',
+        style: {
+          stroke: '#3a4158',
+          lineWidth: 1.5,
+          endArrow: {
+            path: G6.Arrow.triangle(6, 8, 0),
+            fill: '#3a4158',
+          },
+        },
+      }));
+
+      const container = document.getElementById('graph');
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+
+      const graph = new G6.Graph({
+        container: 'graph',
+        width,
+        height,
+        fitView: true,
+        fitViewPadding: 40,
+        layout: {
+          type: 'dagre',
+          rankdir: 'LR',
+          align: 'UL',
+          nodesep: 20,
+          ranksep: 80,
+        },
+        defaultNode: { type: 'rect' },
+        defaultEdge: { type: 'cubic-horizontal' },
+        modes: {
+          default: ['drag-canvas', 'zoom-canvas', 'drag-node'],
+        },
+      });
+
+      graph.data({ nodes: styledNodes, edges: styledEdges });
+      graph.render();
+
+      // Resize
+      window.addEventListener('resize', () => {
+        if (!graph || graph.get('destroyed')) return;
+        graph.changeSize(container.clientWidth, container.clientHeight);
+      });
+
+      // Highlight upstream & downstream
+      function collectLineage(nodeId) {
+        const up = new Set();
+        const down = new Set();
+        const walk = (id, dir) => {
+          graph.getEdges().forEach((edge) => {
+            const model = edge.getModel();
+            if (dir === 'up' && model.target === id && !up.has(model.source)) {
+              up.add(model.source);
+              walk(model.source, 'up');
+            }
+            if (dir === 'down' && model.source === id && !down.has(model.target)) {
+              down.add(model.target);
+              walk(model.target, 'down');
+            }
+          });
+        };
+        walk(nodeId, 'up');
+        walk(nodeId, 'down');
+        return { up, down };
+      }
+
+      function resetStyles() {
+        graph.getNodes().forEach((n) => {
+          graph.setItemState(n, 'dim', false);
+          graph.setItemState(n, 'highlight', false);
+        });
+        graph.getEdges().forEach((e) => {
+          graph.setItemState(e, 'dim', false);
+          graph.setItemState(e, 'highlight', false);
+        });
+      }
+
+      // register visual states
+      G6.registerNode(
+        'rect',
+        {
+          setState(name, value, item) {
+            const shape = item.get('keyShape');
+            if (name === 'dim') {
+              shape.attr('opacity', value ? 0.25 : 1);
+              item.getContainer().attr('opacity', value ? 0.4 : 1);
+            }
+            if (name === 'highlight') {
+              shape.attr('lineWidth', value ? 3 : 1.5);
+              shape.attr('shadowColor', value ? shape.attr('stroke') : null);
+              shape.attr('shadowBlur', value ? 16 : 0);
+            }
+          },
+        },
+        'rect',
+      );
+
+      graph.on('node:click', (evt) => {
+        const id = evt.item.getModel().id;
+        const model = evt.item.getModel();
+        const { up, down } = collectLineage(id);
+        const keep = new Set([id, ...up, ...down]);
+
+        graph.getNodes().forEach((n) => {
+          const inSet = keep.has(n.getModel().id);
+          graph.setItemState(n, 'dim', !inSet);
+          graph.setItemState(n, 'highlight', n.getModel().id === id);
+        });
+        graph.getEdges().forEach((e) => {
+          const m = e.getModel();
+          const onPath = keep.has(m.source) && keep.has(m.target);
+          graph.setItemState(e, 'dim', !onPath);
+        });
+
+        document.getElementById('detail').innerHTML = `
+          <div class="node-name">${model.label}</div>
+          <div class="row"><span class="k">分层</span><span>${model.layer}</span></div>
+          <div class="row"><span class="k">数据量</span><span>${model.rows}</span></div>
+          <div class="row"><span class="k">负责团队</span><span>${model.owner}</span></div>
+          <div class="row"><span class="k">上游表</span><span>${up.size}</span></div>
+          <div class="row"><span class="k">下游表</span><span>${down.size}</span></div>
+        `;
+      });
+
+      graph.on('canvas:click', () => {
+        resetStyles();
+        document.getElementById('detail').innerHTML =
+          '<div class="empty">点击任意表节点查看详情；点击节点可高亮它的上下游血缘。</div>';
+      });
+
+      document.getElementById('fit').onclick = () => graph.fitView(40);
+      document.getElementById('zoom-in').onclick = () => graph.zoom(1.2);
+      document.getElementById('zoom-out').onclick = () => graph.zoom(0.8);
+      document.getElementById('reset').onclick = () => {
+        resetStyles();
+        document.getElementById('detail').innerHTML =
+          '<div class="empty">点击任意表节点查看详情；点击节点可高亮它的上下游血缘。</div>';
+      };
+    </script>
+  </body>
+</html>

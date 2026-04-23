@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Copilot Demo · DataPilot</title>
+    <link rel="stylesheet" href="../assets/style.css" />
+    <style>
+      body {
+        overflow: hidden;
+      }
+      .app {
+        display: flex;
+        height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 240px;
+        border-right: 1px solid var(--border);
+        background: var(--bg-card);
+        display: flex;
+        flex-direction: column;
+        padding: 16px 12px;
+      }
+      .sidebar .brand {
+        font-weight: 600;
+        padding: 4px 8px 16px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 12px;
+      }
+      .sidebar .brand span {
+        color: var(--accent);
+      }
+      .sidebar .back {
+        font-size: 12px;
+        color: var(--text-muted);
+        padding: 4px 8px;
+        margin-top: auto;
+      }
+      .sidebar .session {
+        padding: 10px 12px;
+        border-radius: 6px;
+        font-size: 13px;
+        color: var(--text-muted);
+        cursor: pointer;
+        margin-bottom: 4px;
+      }
+      .sidebar .session.active {
+        background: var(--accent-soft);
+        color: var(--text);
+      }
+      .sidebar .session:hover:not(.active) {
+        background: var(--bg-card-hover);
+        color: var(--text);
+      }
+      .sidebar .label {
+        font-size: 11px;
+        color: var(--text-muted);
+        padding: 0 8px;
+        margin: 14px 0 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      /* Chat */
+      .chat {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+      .chat-header {
+        padding: 14px 24px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .chat-header h1 {
+        font-size: 16px;
+        font-weight: 600;
+      }
+      .chat-header .sub {
+        color: var(--text-muted);
+        font-size: 13px;
+        margin-left: 10px;
+      }
+
+      .messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 24px 24px 12px;
+      }
+      .messages::-webkit-scrollbar {
+        width: 8px;
+      }
+      .messages::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 4px;
+      }
+
+      .msg {
+        margin-bottom: 20px;
+        max-width: 720px;
+      }
+      .msg .role {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+      }
+      .msg.user .role::before {
+        content: '👤 ';
+      }
+      .msg.assistant .role::before {
+        content: '🤖 ';
+      }
+      .msg.user .role {
+        color: var(--accent);
+      }
+      .msg .bubble {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px 16px;
+        font-size: 14px;
+        line-height: 1.7;
+        white-space: pre-wrap;
+      }
+      .msg.user .bubble {
+        background: var(--accent-soft);
+        border-color: transparent;
+      }
+
+      .code-block {
+        background: #0b0d12;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 12px 14px;
+        font-family: var(--mono);
+        font-size: 13px;
+        color: #c7d1e8;
+        margin: 10px 0;
+        overflow-x: auto;
+        white-space: pre;
+      }
+      .sql-keyword {
+        color: #c678dd;
+      }
+      .sql-func {
+        color: #61afef;
+      }
+      .sql-string {
+        color: #98c379;
+      }
+
+      .table-result {
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        margin: 10px 0;
+        overflow: hidden;
+        font-size: 13px;
+      }
+      .table-result table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .table-result th,
+      .table-result td {
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--border);
+        text-align: left;
+        font-family: var(--mono);
+      }
+      .table-result th {
+        background: #0b0d12;
+        color: var(--text-muted);
+        font-weight: 500;
+      }
+      .table-result tr:last-child td {
+        border-bottom: none;
+      }
+
+      .lineage-mini {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin: 10px 0;
+        flex-wrap: wrap;
+      }
+      .lineage-mini .n {
+        padding: 6px 12px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        font-family: var(--mono);
+        font-size: 12px;
+        background: #0b0d12;
+      }
+      .lineage-mini .arrow {
+        color: var(--text-muted);
+      }
+
+      .typing-dot {
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        margin-right: 3px;
+        background: var(--text-muted);
+        border-radius: 50%;
+        animation: pulse 1.2s infinite;
+      }
+      .typing-dot:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .typing-dot:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+      @keyframes pulse {
+        0%, 60%, 100% { opacity: 0.3; }
+        30% { opacity: 1; }
+      }
+
+      .suggestions {
+        padding: 8px 24px 12px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .suggestion {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        color: var(--text);
+        font-size: 12px;
+        padding: 6px 12px;
+        border-radius: 16px;
+        cursor: pointer;
+      }
+      .suggestion:hover {
+        border-color: var(--accent);
+      }
+
+      .input-area {
+        padding: 12px 24px 20px;
+        border-top: 1px solid var(--border);
+      }
+      .input-box {
+        display: flex;
+        gap: 10px;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 10px 12px;
+      }
+      .input-box textarea {
+        flex: 1;
+        background: transparent;
+        border: none;
+        outline: none;
+        color: var(--text);
+        font-family: inherit;
+        font-size: 14px;
+        resize: none;
+        line-height: 1.6;
+        min-height: 22px;
+        max-height: 120px;
+      }
+      .input-box button {
+        align-self: flex-end;
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 6px 16px;
+        cursor: pointer;
+        font-weight: 500;
+      }
+      .input-box button:disabled {
+        background: #343a4a;
+        cursor: not-allowed;
+      }
+      .hint {
+        font-size: 11px;
+        color: var(--text-muted);
+        margin-top: 6px;
+        text-align: right;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="brand">Data<span>Pilot</span> · Copilot</div>
+        <div class="label">今日会话</div>
+        <div class="session active">📊 DAU 异常排查</div>
+        <div class="session">🔍 订单表血缘分析</div>
+        <div class="session">⚡ SQL 执行优化</div>
+        <div class="label">昨日</div>
+        <div class="session">💰 支付链路监控</div>
+        <div class="session">📈 周报数据核对</div>
+        <div class="back"><a href="../index.html">← 返回简历</a></div>
+      </aside>
+
+      <main class="chat">
+        <div class="chat-header">
+          <div>
+            <h1 style="display: inline">🤖 AI Copilot 对话</h1>
+            <span class="sub">产品形态复刻 · 预设问答演示</span>
+          </div>
+          <span style="color: var(--success); font-size: 13px">● 模型就绪</span>
+        </div>
+
+        <div class="messages" id="messages"></div>
+
+        <div class="suggestions" id="suggestions"></div>
+
+        <div class="input-area">
+          <div class="input-box">
+            <textarea
+              id="input"
+              placeholder="用自然语言问点什么，例如「昨天的 DAU 是多少？」"
+              rows="1"
+            ></textarea>
+            <button id="send">发送</button>
+          </div>
+          <div class="hint">这是一个演示环境，问答为预设流程，展示产品交互形态。</div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      const SCENARIOS = [
+        {
+          q: '昨天的 DAU 是多少？',
+          a: [
+            { type: 'text', content: '已定位到指标 `dau_daily`，来源表 `ads_dashboard_dau`。为你生成并执行查询：' },
+            {
+              type: 'sql',
+              content:
+                '<span class="sql-keyword">SELECT</span> dt, dau\n' +
+                '<span class="sql-keyword">FROM</span> ads_dashboard_dau\n' +
+                '<span class="sql-keyword">WHERE</span> dt = <span class="sql-string">\'2026-04-22\'</span>;',
+            },
+            {
+              type: 'table',
+              columns: ['dt', 'dau'],
+              rows: [['2026-04-22', '1,284,910']],
+            },
+            {
+              type: 'text',
+              content:
+                '昨日 DAU 为 **1,284,910**，环比前日下降 3.2%。\n' +
+                '要我进一步做异常归因（按渠道 / 地域拆解）吗？',
+            },
+          ],
+        },
+        {
+          q: '这张表的血缘是什么样的？',
+          a: [
+            { type: 'text', content: '正在追溯 `ads_dashboard_dau` 的上游血缘……' },
+            {
+              type: 'lineage',
+              chain: ['ods_user_log', 'dwd_user_event', 'dws_user_day', 'ads_dashboard_dau'],
+            },
+            {
+              type: 'text',
+              content:
+                '该表由 3 层上游加工而来：\n' +
+                '• **ODS 层**：`ods_user_log`（埋点日志接入）\n' +
+                '• **DWD 层**：`dwd_user_event`（清洗 / 去重 / 字段标准化）\n' +
+                '• **DWS 层**：`dws_user_day`（用户日度聚合）\n\n' +
+                '任何上游的调度延迟都会影响该表的产出时间。点击「血缘图」查看完整可视化。',
+            },
+          ],
+        },
+        {
+          q: '这段 SQL 为什么跑得慢？',
+          a: [
+            { type: 'text', content: '我分析了执行计划，定位到两个潜在问题：' },
+            {
+              type: 'text',
+              content:
+                '**① 缺少分区过滤**\n' +
+                '`dwd_order_detail` 是日分区表，但 WHERE 子句未指定 `dt` 分区，触发了全表扫描（约 42M 行）。\n\n' +
+                '**② JOIN 顺序不佳**\n' +
+                '小表 `dim_user` 被放在右侧，可调整为左侧以启用 MapJoin。',
+            },
+            {
+              type: 'sql',
+              content:
+                '<span class="sql-comment">-- 建议改写：</span>\n' +
+                '<span class="sql-keyword">SELECT</span> /*+ <span class="sql-func">MAPJOIN</span>(u) */ o.*, u.name\n' +
+                '<span class="sql-keyword">FROM</span> dwd_order_detail o\n' +
+                '<span class="sql-keyword">JOIN</span> dim_user u <span class="sql-keyword">ON</span> o.uid = u.id\n' +
+                '<span class="sql-keyword">WHERE</span> o.dt = <span class="sql-string">\'2026-04-22\'</span>;',
+            },
+            { type: 'text', content: '预估优化后执行时间从 128s → ~12s。要我直接替换并重跑吗？' },
+          ],
+        },
+      ];
+
+      const INITIAL_SUGGESTIONS = SCENARIOS.map((s) => s.q);
+      const messagesEl = document.getElementById('messages');
+      const input = document.getElementById('input');
+      const sendBtn = document.getElementById('send');
+      const suggestionsEl = document.getElementById('suggestions');
+
+      let busy = false;
+
+      function renderSuggestions(list) {
+        suggestionsEl.innerHTML = '';
+        list.forEach((q) => {
+          const el = document.createElement('span');
+          el.className = 'suggestion';
+          el.textContent = q;
+          el.onclick = () => {
+            if (busy) return;
+            input.value = q;
+            handleSend();
+          };
+          suggestionsEl.appendChild(el);
+        });
+      }
+
+      function appendMessage(role, contentBuilder) {
+        const msg = document.createElement('div');
+        msg.className = `msg ${role}`;
+        msg.innerHTML = `<div class="role">${role === 'user' ? '你' : 'Copilot'}</div>`;
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        msg.appendChild(bubble);
+        messagesEl.appendChild(msg);
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+        contentBuilder(bubble);
+        return bubble;
+      }
+
+      function showTyping() {
+        const msg = document.createElement('div');
+        msg.className = 'msg assistant typing';
+        msg.innerHTML = `
+          <div class="role">Copilot</div>
+          <div class="bubble">
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+          </div>`;
+        messagesEl.appendChild(msg);
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+        return msg;
+      }
+
+      function sleep(ms) {
+        return new Promise((r) => setTimeout(r, ms));
+      }
+
+      function streamText(el, html) {
+        return new Promise((resolve) => {
+          const chunks = html.split(/(<[^>]+>)/g);
+          let i = 0;
+          let idx = 0;
+          function tick() {
+            if (i >= chunks.length) return resolve();
+            const ch = chunks[i];
+            if (ch.startsWith('<')) {
+              el.innerHTML += ch;
+              i++;
+              idx = 0;
+              return tick();
+            }
+            if (idx >= ch.length) {
+              i++;
+              idx = 0;
+              return tick();
+            }
+            el.innerHTML += ch[idx];
+            idx++;
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+            setTimeout(tick, 8 + Math.random() * 10);
+          }
+          tick();
+        });
+      }
+
+      function mdToHtml(md) {
+        return md
+          .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+          .replace(/`([^`]+)`/g, '<code style="font-family:var(--mono);background:#0b0d12;padding:1px 5px;border-radius:3px;color:var(--accent);">$1</code>')
+          .replace(/\n/g, '<br/>');
+      }
+
+      async function renderSteps(steps) {
+        const typing = showTyping();
+        await sleep(650);
+        typing.remove();
+
+        for (const step of steps) {
+          const bubble = appendMessage('assistant', () => {}).parentElement
+            .querySelector(':scope > .bubble');
+          if (step.type === 'text') {
+            await streamText(bubble, mdToHtml(step.content));
+          } else if (step.type === 'sql') {
+            const pre = document.createElement('pre');
+            pre.className = 'code-block';
+            pre.innerHTML = step.content;
+            bubble.appendChild(pre);
+          } else if (step.type === 'table') {
+            const wrap = document.createElement('div');
+            wrap.className = 'table-result';
+            const head = '<tr>' + step.columns.map((c) => `<th>${c}</th>`).join('') + '</tr>';
+            const body = step.rows
+              .map((r) => '<tr>' + r.map((c) => `<td>${c}</td>`).join('') + '</tr>')
+              .join('');
+            wrap.innerHTML = `<table><thead>${head}</thead><tbody>${body}</tbody></table>`;
+            bubble.appendChild(wrap);
+          } else if (step.type === 'lineage') {
+            const wrap = document.createElement('div');
+            wrap.className = 'lineage-mini';
+            step.chain.forEach((n, i) => {
+              if (i > 0) {
+                const a = document.createElement('span');
+                a.className = 'arrow';
+                a.textContent = '→';
+                wrap.appendChild(a);
+              }
+              const el = document.createElement('span');
+              el.className = 'n';
+              el.textContent = n;
+              wrap.appendChild(el);
+            });
+            bubble.appendChild(wrap);
+          }
+          await sleep(250);
+          messagesEl.scrollTop = messagesEl.scrollHeight;
+        }
+      }
+
+      async function handleSend() {
+        if (busy) return;
+        const text = input.value.trim();
+        if (!text) return;
+        busy = true;
+        sendBtn.disabled = true;
+        input.value = '';
+        suggestionsEl.innerHTML = '';
+
+        appendMessage('user', (bubble) => {
+          bubble.textContent = text;
+        });
+
+        const matched =
+          SCENARIOS.find((s) => text.includes(s.q) || s.q.includes(text.slice(0, 4))) || null;
+
+        if (matched) {
+          await renderSteps(matched.a);
+        } else {
+          await renderSteps([
+            {
+              type: 'text',
+              content:
+                '这是一个演示环境，仅支持以下几类预设问题：\n\n' +
+                '• 昨天的 DAU 是多少？\n' +
+                '• 这张表的血缘是什么样的？\n' +
+                '• 这段 SQL 为什么跑得慢？',
+            },
+          ]);
+        }
+
+        busy = false;
+        sendBtn.disabled = false;
+        renderSuggestions(INITIAL_SUGGESTIONS);
+      }
+
+      sendBtn.addEventListener('click', handleSend);
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          handleSend();
+        }
+      });
+
+      // 初始欢迎消息
+      (async () => {
+        await sleep(200);
+        await renderSteps([
+          {
+            type: 'text',
+            content:
+              '你好！我是 DataPilot Copilot，可以用自然语言帮你：\n\n' +
+              '• 📊 **查数据** —— 自动生成 SQL、执行并返回结果\n' +
+              '• 🕸 **追血缘** —— 快速定位表的上下游依赖\n' +
+              '• ⚡ **优 SQL** —— 分析执行计划、给出优化建议\n\n' +
+              '试试左下方的建议问题 👇',
+          },
+        ]);
+        renderSuggestions(INITIAL_SUGGESTIONS);
+      })();
+    </script>
+  </body>
+</html>

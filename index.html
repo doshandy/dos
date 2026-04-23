@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>个人简介 · 前端工程师</title>
+    <meta
+      name="description"
+      content="专注企业级数据平台与 AI 产品化集成，擅长将复杂的数据能力转化为易用的前端产品。"
+    />
+    <link rel="stylesheet" href="./assets/style.css" />
+  </head>
+  <body>
+    <main class="container">
+      <header class="hero">
+        <h1>前端工程师 · 数据平台方向</h1>
+        <p class="tagline">
+          专注企业级数据平台与 AI 产品化集成，擅长将复杂的数据能力转化为易用的前端产品。
+        </p>
+        <div class="meta">
+          <span>📫 <a href="mailto:sun8630520@126.com">sun8630520@126.com</a></span>
+          <span>🧪 <a href="./demos/lineage.html">血缘可视化 Demo</a></span>
+          <span>🤖 <a href="./demos/copilot.html">AI Copilot Demo</a></span>
+        </div>
+      </header>
+
+      <section>
+        <h2>核心能力</h2>
+        <div class="ability-grid">
+          <div class="ability">
+            <div class="title">前端工程化 / 低代码平台</div>
+            <div class="desc">Vue 3 · TypeScript · Monorepo · 低代码 Schema → 源码工程化迁移</div>
+          </div>
+          <div class="ability">
+            <div class="title">数据可视化与交互</div>
+            <div class="desc">AntV G6 血缘图谱 · VXE-Table 大数据表格 · Monaco SQL 编辑器</div>
+          </div>
+          <div class="ability">
+            <div class="title">AI 产品化集成</div>
+            <div class="desc">LLM Agent 对话 · 流式响应 · 自然语言 → SQL / 数据探索</div>
+          </div>
+          <div class="ability">
+            <div class="title">企业级数据平台架构</div>
+            <div class="desc">多国多业务线隔离 · 权限体系 · SQL 多引擎 · 任务调度与告警</div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>主推项目：DataPilot</h2>
+        <div class="project">
+          <span class="pill">一体化数据协作平台</span>
+          <h3>DataPilot — 企业级数据中台前端</h3>
+          <p class="summary">
+            整合数据集成、数据治理、任务调度与 AI
+            驱动探索的企业级数据平台，服务多国多业务线，涵盖整个数据生命周期。
+          </p>
+
+          <div class="stat-row">
+            <div class="stat">
+              <div class="num">500+</div>
+              <div class="label">代码提交数（Top 2 贡献者）</div>
+            </div>
+            <div class="stat">
+              <div class="num">8</div>
+              <div class="label">主导 / 深度参与的核心模块</div>
+            </div>
+            <div class="stat">
+              <div class="num">4</div>
+              <div class="label">多国部署版本（CN / ID / ES / MX）</div>
+            </div>
+          </div>
+
+          <h3>主导 / 深度参与的模块</h3>
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 32%">模块</th>
+                <th>职责范围</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>DataMap + AI Copilot</strong></td>
+                <td>数据资产目录 + 基于 LLM 的对话式 Agent，支持自然语言查询、血缘分析、SQL 诊断</td>
+              </tr>
+              <tr>
+                <td><strong>Cerebro SQL 平台</strong></td>
+                <td>多引擎 SQL 编辑执行（Hive / Spark），格式化、执行计划、查询诊断、结果分析</td>
+              </tr>
+              <tr>
+                <td><strong>Matrix 数据集成</strong></td>
+                <td>数据源接入、任务配置、同步调度、Tableau 对接</td>
+              </tr>
+              <tr>
+                <td><strong>Schedule / Publish</strong></td>
+                <td>分布式任务调度与发布中心，依赖管理、参数化、审批流</td>
+              </tr>
+              <tr>
+                <td><strong>Table 表管理</strong></td>
+                <td>元数据管理、表开发、分区配置、业务线归属</td>
+              </tr>
+              <tr>
+                <td><strong>DQC 数据质量</strong></td>
+                <td>跨数据源对比、质量模板、SQL 校验</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>技术亮点</h3>
+          <ul>
+            <li>
+              <strong>AI Copilot 交互设计</strong>：将 LLM
+              能力封装为可嵌入业务场景的侧边栏 Agent，支持会话上下文、流式输出、场景切换（查表 / 问血缘 / SQL 诊断）。
+            </li>
+            <li>
+              <strong>数据血缘可视化</strong>：基于 AntV G6 渲染大规模血缘图谱，支持拖拽、层级折叠、影响链追溯。
+            </li>
+            <li>
+              <strong>低代码 → 源码工程化迁移</strong>：主导平台从「低代码运行时渲染」到「源码工程化构建」的重构迁移，显著提升构建可控性与可维护性。
+            </li>
+            <li>
+              <strong>多国多业务线隔离</strong>：通过域名推断 + 运行时参数隔离，同一套代码支撑 CN / ID / ES / MX 多国独立部署。
+            </li>
+            <li>
+              <strong>细粒度权限体系</strong>：表级权限、用户分组、临时授权、审计流程。
+            </li>
+          </ul>
+
+          <h3>技术栈</h3>
+          <div class="tags">
+            <span class="tag">Vue 3</span>
+            <span class="tag">TypeScript</span>
+            <span class="tag">Ant Design Vue</span>
+            <span class="tag">VXE-Table</span>
+            <span class="tag">AntV G6</span>
+            <span class="tag">Monaco Editor</span>
+            <span class="tag">sql-formatter</span>
+            <span class="tag">Axios</span>
+            <span class="tag">IndexedDB</span>
+            <span class="tag">SSE 流式对话</span>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>并行主导：DataLumina</h2>
+        <p>
+          同期主导开发的数据指标与标签平台，贡献 <strong>280+ 次代码提交</strong>。聚焦
+          <strong>指标管理</strong>（Metric 定义与授权流程）、<strong>标签体系</strong>（Tag 配置与国家隔离）、<strong>数据探索</strong>（Explore 即席查询与下载中心）三大能力，同样完成了从低代码到源码的整体迁移。
+        </p>
+      </section>
+
+      <section>
+        <h2>在线可交互 Demo</h2>
+        <p class="muted" style="margin-bottom: 18px">
+          以下 Demo 是对 DataPilot 核心产品形态的极简复刻，纯前端静态页，可直接在浏览器体验。
+        </p>
+        <div class="demo-grid">
+          <a class="demo-card" href="./demos/lineage.html">
+            <div class="demo-title">🕸 数据血缘可视化</div>
+            <div class="demo-desc">
+              基于 AntV G6 渲染跨库跨表的血缘关系，支持拖拽、节点点击、影响链高亮。
+            </div>
+            <div class="demo-link">→ 打开 Demo</div>
+          </a>
+          <a class="demo-card" href="./demos/copilot.html">
+            <div class="demo-title">🤖 AI Copilot 对话</div>
+            <div class="demo-desc">
+              模拟自然语言查询数据的对话流，包含预设问答、流式输出动画、会话管理。
+            </div>
+            <div class="demo-link">→ 打开 Demo</div>
+          </a>
+        </div>
+      </section>
+
+      <footer>
+        欢迎就数据平台、AI 集成、前端工程化等话题交流 · <a href="mailto:sun8630520@126.com">sun8630520@126.com</a>
+      </footer>
+    </main>
+  </body>
+</html>
