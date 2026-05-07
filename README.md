@@ -3,7 +3,8 @@
 > 专注企业级数据平台与 AI 产品化集成，擅长将复杂的数据能力转化为易用的前端产品。
 
 - 📫 **联系方式**：sun8630520@126.com
-- 🌐 **在线简历**：<https://doshandy.github.io/dos/>
+- 🌐 **作品集首页**：<https://doshandy.github.io/dos/>
+- 📄 **简历（PDF / Markdown）**：<https://doshandy.github.io/dos/resume/>（在线浏览，⌘P 即可生成 PDF）
 - 🧪 **交互 Demo**
   - 🕸 数据血缘可视化（AntV G6）：<https://doshandy.github.io/dos/demos/lineage.html>
   - 🤖 AI Copilot 对话：<https://doshandy.github.io/dos/demos/copilot.html>

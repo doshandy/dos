@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>孙伟 · 简历 · 前端工程师（数据平台 / AI 方向）</title>
+    <meta
+      name="description"
+      content="孙伟 - 前端工程师 · 数据平台与 AI 产品化方向 · DataPilot Top 2 贡献者 · 在线 Demo 可交互体验"
+    />
+    <link rel="stylesheet" href="../assets/style.css" />
+    <style>
+      /* ============ 屏幕：沿用 dos 暗色 ============ */
+      .container {
+        max-width: 920px;
+      }
+
+      .toolbar {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: rgba(11, 13, 18, 0.85);
+        backdrop-filter: blur(8px);
+        margin: -64px -24px 32px;
+        padding: 14px 24px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+      .toolbar .crumb {
+        font-size: 13px;
+        color: var(--text-muted);
+      }
+      .toolbar .crumb a {
+        color: var(--text);
+      }
+      .toolbar .actions {
+        display: flex;
+        gap: 8px;
+      }
+      .btn {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        color: var(--text);
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-size: 13px;
+        cursor: pointer;
+        font-family: inherit;
+        transition: border-color 0.15s ease;
+      }
+      .btn:hover {
+        border-color: var(--accent);
+      }
+      .btn.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+      .btn.primary:hover {
+        opacity: 0.9;
+      }
+
+      .resume-hero h1 {
+        font-size: 30px;
+        margin-bottom: 6px;
+      }
+      .resume-hero .role {
+        color: var(--accent);
+        font-size: 15px;
+        font-weight: 500;
+        margin-bottom: 10px;
+      }
+      .resume-hero .summary {
+        color: var(--text-muted);
+        max-width: 720px;
+        font-size: 14.5px;
+      }
+      .resume-hero .meta-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px 24px;
+        margin-top: 18px;
+        font-size: 13.5px;
+        color: var(--text-muted);
+      }
+      .resume-hero .meta-grid .lbl {
+        color: var(--text-muted);
+        margin-right: 6px;
+      }
+      .resume-hero .meta-grid a {
+        color: var(--text);
+      }
+      @media (max-width: 640px) {
+        .resume-hero .meta-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      h4 {
+        font-size: 14.5px;
+        margin: 18px 0 6px;
+        color: var(--text);
+      }
+
+      .module-table th:first-child {
+        width: 28%;
+      }
+
+      .stat-row .stat .num {
+        font-size: 24px;
+      }
+
+      .demo-table tr td:first-child {
+        width: 30%;
+        font-weight: 500;
+      }
+      .demo-table a {
+        font-family: var(--mono);
+      }
+
+      .skill-list {
+        list-style: none;
+        padding: 0;
+        display: grid;
+        grid-template-columns: 140px 1fr;
+        gap: 6px 16px;
+        font-size: 13.5px;
+      }
+      .skill-list dt {
+        color: var(--text-muted);
+        font-weight: 500;
+      }
+      .skill-list dd {
+        margin: 0;
+        color: var(--text);
+      }
+
+      footer .links {
+        margin-top: 6px;
+      }
+      footer .links a {
+        margin: 0 6px;
+      }
+
+      /* ============ 打印（A4）：切浅色，单栏，链接显式 ============ */
+      @page {
+        size: A4;
+        margin: 14mm 14mm;
+      }
+      @media print {
+        :root {
+          --bg: #ffffff;
+          --bg-card: #ffffff;
+          --bg-card-hover: #f8fafc;
+          --border: #cbd5e1;
+          --text: #0f172a;
+          --text-muted: #475569;
+          --accent: #1d4ed8;
+          --accent-soft: #dbeafe;
+        }
+        html,
+        body {
+          background: #fff !important;
+          color: #0f172a !important;
+          font-size: 11.5px;
+          line-height: 1.55;
+        }
+        .container {
+          max-width: none;
+          padding: 0 !important;
+          margin: 0 !important;
+        }
+        .toolbar {
+          display: none !important;
+        }
+        a,
+        a:visited {
+          color: var(--accent) !important;
+          text-decoration: none !important;
+        }
+        section {
+          margin-bottom: 14px !important;
+          page-break-inside: avoid;
+        }
+        section h2 {
+          font-size: 14px;
+          margin-bottom: 8px;
+        }
+        section h3 {
+          font-size: 12.5px;
+          margin: 10px 0 4px;
+        }
+        h4 {
+          font-size: 12px;
+          margin: 8px 0 3px;
+        }
+        ul li {
+          margin-bottom: 2px;
+        }
+        .resume-hero h1 {
+          font-size: 22px;
+        }
+        .resume-hero .role {
+          font-size: 12.5px;
+          margin-bottom: 4px;
+        }
+        .resume-hero .summary {
+          font-size: 11.5px;
+        }
+        .resume-hero .meta-grid {
+          margin-top: 8px;
+          font-size: 11.5px;
+        }
+        .ability-grid {
+          gap: 6px !important;
+        }
+        .ability {
+          padding: 8px 10px !important;
+        }
+        .project {
+          padding: 12px !important;
+        }
+        .stat-row {
+          gap: 8px !important;
+          margin: 8px 0 12px !important;
+        }
+        .stat {
+          padding: 8px 10px !important;
+        }
+        .stat .num {
+          font-size: 16px !important;
+        }
+        table th,
+        table td {
+          padding: 4px 6px !important;
+          font-size: 11px;
+        }
+        .tags .tag {
+          font-size: 10px !important;
+          padding: 1px 6px !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="container">
+      <div class="toolbar">
+        <div class="crumb">
+          <a href="../">← 返回作品集</a> / <span>简历</span>
+        </div>
+        <div class="actions">
+          <button class="btn" onclick="window.print()">📄 下载 PDF</button>
+          <a class="btn primary" href="./resume.md" download>⬇ 下载 Markdown</a>
+        </div>
+      </div>
+
+      <header class="hero resume-hero">
+        <h1>孙伟</h1>
+        <div class="role">前端工程师 · 数据平台 / AI 产品化方向</div>
+        <p class="summary">
+          专注企业级数据平台与 AI 产品化集成，主技术栈
+          <strong>Vue 3 + TypeScript</strong>。在 DataPilot 一体化数据协作平台中作为
+          <strong>Top 2 代码贡献者</strong>（500+ 提交 / 8 个核心模块），同期并行主导 DataLumina
+          数据指标与标签平台（280+ 提交）。两个平台都由我牵头完成<strong>从低代码运行时到源码工程化</strong>的整体重构迁移。
+        </p>
+        <div class="meta-grid">
+          <span><span class="lbl">城市</span>北京</span>
+          <span
+            ><span class="lbl">求职意向</span>资深前端 / 数据平台前端 / AI 应用前端 / Tech Lead</span
+          >
+          <span
+            ><span class="lbl">邮箱</span
+            ><a href="mailto:sun8630520@126.com">sun8630520@126.com</a></span
+          >
+          <span><span class="lbl">手机</span>{{phone}}</span>
+          <span
+            ><span class="lbl">作品集</span
+            ><a href="https://doshandy.github.io/dos/">doshandy.github.io/dos</a></span
+          >
+          <span
+            ><span class="lbl">个人项目</span
+            ><a href="https://doshandy.github.io/kap/">doshandy.github.io/kap (KAP)</a></span
+          >
+          <span
+            ><span class="lbl">GitHub</span
+            ><a href="https://github.com/doshandy">github.com/doshandy</a></span
+          >
+        </div>
+      </header>
+
+      <section>
+        <h2>核心能力</h2>
+        <div class="ability-grid">
+          <div class="ability">
+            <div class="title">前端工程化 / 低代码迁移</div>
+            <div class="desc">Vue 3 · TypeScript · Monorepo · 低代码 → 源码工程化迁移</div>
+          </div>
+          <div class="ability">
+            <div class="title">数据可视化与交互</div>
+            <div class="desc">AntV G6 血缘图 · VXE-Table 大数据表格 · Monaco SQL 编辑器</div>
+          </div>
+          <div class="ability">
+            <div class="title">AI 产品化集成</div>
+            <div class="desc">LLM Agent · SSE 流式响应 · 自然语言 → SQL / 数据探索</div>
+          </div>
+          <div class="ability">
+            <div class="title">企业级数据平台架构</div>
+            <div class="desc">多国多业务线隔离 · 权限体系 · SQL 多引擎 · 任务调度与告警</div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>工作经历</h2>
+
+        <h3>某金融科技公司 · 资深前端工程师 / 模块负责人</h3>
+        <p class="muted">
+          公司主营海内外消费金融业务，前端覆盖 C 端 H5、运营后台、数据平台、客服 IM、海外多语言产品等多条产品线。我在数据平台与 AI 产品化方向长期投入，是这两个方向的核心建设者之一。
+        </p>
+
+        <div class="project" style="margin-top: 14px">
+          <span class="pill">主推项目</span>
+          <h3>DataPilot — 一体化数据协作平台</h3>
+          <p class="summary">
+            整合数据集成、数据治理、任务调度与 AI
+            驱动探索的企业级数据平台，服务多国多业务线，涵盖整个数据生命周期。
+          </p>
+
+          <div class="stat-row">
+            <div class="stat">
+              <div class="num">500+</div>
+              <div class="label">代码提交（Top 2 贡献者）</div>
+            </div>
+            <div class="stat">
+              <div class="num">8</div>
+              <div class="label">主导 / 深度参与的核心模块</div>
+            </div>
+            <div class="stat">
+              <div class="num">4</div>
+              <div class="label">多国部署版本（CN / ID / ES / MX）</div>
+            </div>
+          </div>
+
+          <h4>主导 / 深度参与的模块</h4>
+          <table class="module-table">
+            <thead>
+              <tr>
+                <th>模块</th>
+                <th>职责范围</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>DataMap + AI Copilot</strong></td>
+                <td>数据资产目录 + 基于 LLM 的对话式 Agent，支持自然语言查询、血缘分析、SQL 诊断</td>
+              </tr>
+              <tr>
+                <td><strong>Cerebro SQL 平台</strong></td>
+                <td>多引擎 SQL 编辑执行（Hive / Spark），格式化、执行计划、查询诊断、结果分析</td>
+              </tr>
+              <tr>
+                <td><strong>Matrix 数据集成</strong></td>
+                <td>数据源接入、任务配置、同步调度、Tableau 对接</td>
+              </tr>
+              <tr>
+                <td><strong>Schedule / Publish</strong></td>
+                <td>分布式任务调度与发布中心，依赖管理、参数化、审批流</td>
+              </tr>
+              <tr>
+                <td><strong>Table 表管理</strong></td>
+                <td>元数据管理、表开发、分区配置、业务线归属</td>
+              </tr>
+              <tr>
+                <td><strong>DQC 数据质量</strong></td>
+                <td>跨数据源对比、质量模板、SQL 校验</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h4>技术亮点</h4>
+          <ul>
+            <li>
+              <strong>AI Copilot 交互设计：</strong>把 LLM 能力封装为可嵌入业务场景的侧边栏 Agent，支持会话上下文、SSE 流式输出、场景切换（查表 / 问血缘 / SQL 诊断）
+            </li>
+            <li>
+              <strong>数据血缘可视化：</strong>基于 AntV G6 渲染大规模血缘图谱，支持拖拽、层级折叠、上下游影响链追溯
+            </li>
+            <li>
+              <strong>低代码 → 源码工程化迁移：</strong>把数十个历史低代码页面批量转为 Vue 3 + TypeScript 源码，建立长期可维护的前端工程体系
+            </li>
+            <li>
+              <strong>多国多业务线隔离：</strong>通过域名推断 + 运行时参数隔离，同一套代码支撑 CN / ID / ES / MX 多国独立部署
+            </li>
+            <li>
+              <strong>细粒度权限体系：</strong>表级权限、用户分组、临时授权、审计流程
+            </li>
+            <li>
+              <strong>大数据表格 / SQL IDE：</strong>VXE-Table 万行级数据流畅滚动；Monaco + sql-formatter 提供专业级 SQL 编辑体验（高亮 / 补全 / 格式化 / 执行计划）
+            </li>
+          </ul>
+
+          <h4>技术栈</h4>
+          <div class="tags">
+            <span class="tag">Vue 3</span><span class="tag">TypeScript</span
+            ><span class="tag">Ant Design Vue</span><span class="tag">VXE-Table</span
+            ><span class="tag">AntV G6</span><span class="tag">Monaco Editor</span
+            ><span class="tag">sql-formatter</span><span class="tag">Axios</span
+            ><span class="tag">IndexedDB</span><span class="tag">SSE 流式对话</span>
+          </div>
+        </div>
+
+        <div class="project" style="margin-top: 18px">
+          <span class="pill">并行主导</span>
+          <h3>DataLumina — 数据指标与标签平台</h3>
+          <p class="summary">
+            与 DataPilot 同期主导开发，<strong>280+ 次代码提交</strong>。同样完成了从低代码到源码的整体迁移，与 DataPilot 共享一套底层组件与权限体系。
+          </p>
+          <ul>
+            <li><strong>指标管理 (Metric)：</strong>指标定义、授权流程、指标首页</li>
+            <li><strong>标签体系 (Tag)：</strong>标签配置、国家隔离、页面权限映射</li>
+            <li><strong>数据探索 (Explore)：</strong>即席查询、下载中心、上传能力</li>
+          </ul>
+        </div>
+
+        <h4 style="margin-top: 22px">前端基础设施 / 协作</h4>
+        <ul>
+          <li><strong>共享组件库：</strong>跨平台沉淀通用业务组件（数据表格、SQL 编辑器、血缘图、AI Copilot 侧边栏），多平台复用</li>
+          <li><strong>CI / CD 与质量门：</strong>参与建设前端 Pipeline（Lint / 单测 / 类型检查 / 构建产物体积守门），关联 Code Review 机制</li>
+          <li><strong>新人 mentor 与技术评审：</strong>参与多名同事的成长辅导，主导关键设计的技术评审</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>在线可交互 Demo</h2>
+        <p class="muted" style="margin-bottom: 12px">
+          以下 Demo 是 DataPilot 核心产品形态的极简复刻，纯前端静态页，可直接在浏览器体验。
+        </p>
+        <table class="demo-table">
+          <tbody>
+            <tr>
+              <td>🕸 数据血缘可视化（AntV G6）</td>
+              <td>
+                <a href="https://doshandy.github.io/dos/demos/lineage.html"
+                  >doshandy.github.io/dos/demos/lineage.html</a
+                >
+              </td>
+            </tr>
+            <tr>
+              <td>🤖 AI Copilot 对话（SSE 流式）</td>
+              <td>
+                <a href="https://doshandy.github.io/dos/demos/copilot.html"
+                  >doshandy.github.io/dos/demos/copilot.html</a
+                >
+              </td>
+            </tr>
+            <tr>
+              <td>📊 数据看板（AntV G2 5.x）</td>
+              <td>
+                <a href="https://doshandy.github.io/dos/demos/charts.html"
+                  >doshandy.github.io/dos/demos/charts.html</a
+                >
+              </td>
+            </tr>
+            <tr>
+              <td>⚡ SQL 编辑器（Monaco + sql-formatter）</td>
+              <td>
+                <a href="https://doshandy.github.io/dos/demos/sql-editor.html"
+                  >doshandy.github.io/dos/demos/sql-editor.html</a
+                >
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>个人项目：KAP — 前端知识图谱</h2>
+        <div class="project">
+          <span class="pill">个人开源项目</span>
+          <h3>
+            <a href="https://doshandy.github.io/kap/">KAP — 前端工程师交互式知识图谱</a>
+          </h3>
+          <p class="summary">
+            Vue 3 + Vite + TypeScript + Pinia 实现的前端知识自查站点，<strong
+              >28 大分类 / 447+ 高频题</strong
+            >，包含答题、间隔复习、模拟面试、代码沙盒、AI 讲解。完整体现工程化与产品化思路。
+          </p>
+          <ul>
+            <li>
+              <strong>架构：</strong>Vue 3 + &lt;script setup&gt; + Pinia；Vue Router 全量懒加载；自实现 Markdown 解析器 + 自动化内容校验脚本
+            </li>
+            <li>
+              <strong>性能：</strong>主入口 gzip 8.9 KB；ECharts / Markdown / 图标 vendor 全部 code split；PWA runtimeCaching 替代 precache，首访带宽 2.7 MB → 1.5 MB；fuse.js 改为按需动态 import
+            </li>
+            <li>
+              <strong>特色：</strong>Cmd+K 全文搜索 · SM-2 间隔复习 · IndexedDB 持久化 · JS / TS 沙盒（postMessage 同源校验）· AI 讲解（OpenAI / Anthropic 双协议、流式 UI）
+            </li>
+            <li>
+              <strong>工程：</strong>Vitest · ESLint flat config · Stylelint · Husky · GitHub Actions CI/CD · Dependabot · 内容校验脚本
+            </li>
+          </ul>
+          <div class="tags">
+            <span class="tag">Vue 3</span><span class="tag">TypeScript</span
+            ><span class="tag">Vite</span><span class="tag">Pinia</span
+            ><span class="tag">Vitest</span><span class="tag">PWA</span
+            ><span class="tag">ECharts</span><span class="tag">Fuse.js</span
+            ><span class="tag">AI 流式</span><span class="tag">GitHub Actions</span>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>教育背景</h2>
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 40%">学校</th>
+              <th>学位 / 专业</th>
+              <th style="width: 22%">时间</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{211 院校名}}</td>
+              <td>本科 / {{专业}}</td>
+              <td>{{2012 — 2016}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>技能清单</h2>
+        <dl class="skill-list">
+          <dt>语言</dt>
+          <dd>TypeScript / JavaScript（精通）· HTML / CSS（精通）· Node.js（熟练）</dd>
+          <dt>框架</dt>
+          <dd>Vue 2/3（精通源码与生态）· Vue Router / Pinia / Vuex（精通）· React（熟悉）</dd>
+          <dt>数据可视化</dt>
+          <dd>AntV G6（精通血缘 / 关系图）· AntV G2 · ECharts · Canvas / WebGL（熟悉）</dd>
+          <dt>数据 / 编辑器</dt>
+          <dd>VXE-Table（万行级数据表）· Monaco Editor（SQL IDE）· sql-formatter</dd>
+          <dt>AI 工程化</dt>
+          <dd>OpenAI / Anthropic / SSE 流式 / 多场景 Agent · 自然语言 → SQL · Prompt 工程</dd>
+          <dt>构建工具</dt>
+          <dd>Vite / Webpack / Rollup / esbuild · pnpm Monorepo</dd>
+          <dt>测试 / 工具链</dt>
+          <dd>Vitest / Jest · ESLint flat config · Husky + lint-staged · GitHub Actions</dd>
+          <dt>协作</dt>
+          <dd>技术评审 · Code Review 机制设计 · 新人 mentor</dd>
+        </dl>
+      </section>
+
+      <section>
+        <h2>求职偏好</h2>
+        <ul>
+          <li>偏好可以同时打磨<strong>业务深度 + 平台能力 + AI 工程化</strong>的岗位</li>
+          <li>北京优先，远程 / Hybrid 也接受</li>
+          <li>喜欢看得见摸得着的事：性能数字、用户体验、CI 时间、Bug 数量等可量化指标</li>
+          <li>期望团队：技术氛围浓厚、Code Review 严格、对前端工程化有持续投入</li>
+        </ul>
+      </section>
+
+      <footer>
+        欢迎就数据平台、AI 集成、前端工程化等话题交流 ·
+        <a href="mailto:sun8630520@126.com">sun8630520@126.com</a>
+        <div class="links">
+          <a href="../">作品集</a> · <a href="https://doshandy.github.io/kap/">KAP 知识图谱</a> ·
+          <a href="https://github.com/doshandy">GitHub</a>
+        </div>
+      </footer>
+    </main>
+  </body>
+</html>
