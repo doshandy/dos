@@ -7,9 +7,8 @@
 | 城市 | 北京 |
 | 求职意向 | 资深前端 / 数据平台前端 / AI 应用前端 / Tech Lead |
 | 邮箱 | [sun8630520@126.com](mailto:sun8630520@126.com) |
-| 手机 | _{{phone}}_ |
+| 手机 | 13121587622 |
 | 在线作品集 | [doshandy.github.io/dos](https://doshandy.github.io/dos/) |
-| 个人项目 | [doshandy.github.io/kap](https://doshandy.github.io/kap/) — 前端知识图谱 KAP（28 分类 / 447+ 题） |
 | GitHub | [github.com/doshandy](https://github.com/doshandy) |
 
 ---
@@ -110,30 +109,11 @@
 
 ---
 
-## 个人项目
-
-### KAP — 前端工程师交互式知识图谱
-
-[doshandy.github.io/kap](https://doshandy.github.io/kap/) · [github.com/doshandy/kap](https://github.com/doshandy/kap)
-
-> Vue 3 + Vite + TypeScript + Pinia 实现的前端知识自查站点，**28 大分类 / 447+ 高频题**，包含答题、间隔复习、模拟面试、代码沙盒、AI 讲解。完整体现我的工程化与产品化思路。
-
-技术亮点：
-
-- **架构**：Vue 3 + `<script setup>` + Pinia 模块化 store；Vue Router 全量懒加载；自实现 Markdown 解析器 + 自动化内容校验脚本
-- **性能**：主入口 gzip 8.9 KB；ECharts / Markdown / 图标 vendor 全部 code split；PWA `runtimeCaching` 替代 precache，首访带宽 2.7 MB → 1.5 MB；fuse.js 改为按需动态 import
-- **特色功能**：Cmd+K 全文搜索（高亮 + 历史）、SM-2 间隔复习算法、IndexedDB 持久化、JS / TS 沙盒（postMessage 同源校验）、AI 讲解（OpenAI / Anthropic 双协议、流式 UI）
-- **工程**：Vitest 单元测试、ESLint flat config、Stylelint、Husky + lint-staged、GitHub Actions CI/CD、Dependabot、内容校验脚本（slug 唯一 / 答案最低字数 / fence 语法）
-- **可访问性**：WCAG `role=combobox/listbox` 搜索面板、`prefers-reduced-motion` 动效降级、键盘可达
-- **深色主题**：自定义 GitHub Dark 风格 Prism token、ECharts 主题切换响应式
-
----
-
 ## 教育背景
 
 | 学校 | 学位 / 专业 | 时间 |
 | --- | --- | --- |
-| _{{211 院校名}}_ | 本科 / _{{专业}}_ | _{{2012 — 2016}}_ |
+| 太原理工大学 | 本科 / 软件工程 | 2012 — 2016 |
 
 ---
 
@@ -160,4 +140,3 @@
 ---
 
 > 📄 **PDF 版**：浏览器打开 [doshandy.github.io/dos/resume/](https://doshandy.github.io/dos/resume/) → ⌘P / Ctrl+P → 选「保存为 PDF」即可。
-> 部分占位字段（{{phone}} / 学校名 / 专业 / 教育时间）请按需替换为真实信息。
